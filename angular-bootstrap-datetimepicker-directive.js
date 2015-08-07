@@ -34,17 +34,22 @@ angular
           datetimepickerOptions: '@'
         },
         link    : function ($scope, $element, $attrs, ngModelCtrl) {
-          var passed_in_options = $scope.$eval($attrs.datetimepickerOptions);
-          var options = jQuery.extend({}, default_options, passed_in_options);
+          var passed_in_options = $scope.$eval($attrs.datetimepickerOptions),
+          directive_options = $scope.$eval($attrs.datetimepickerDirectiveOptions),
+          options = jQuery.extend({}, default_options, passed_in_options);
 
           $element
             .on('dp.change', function (e) {
               if (ngModelCtrl) {
                 $timeout(function () {
+                  var value = e.target.value;
                   if (options.inline) {
-                    ngModelCtrl.$setViewValue($(e.target).find('input').val());
+                    value = $(e.target).find('input').val();
+                  }
+                  if (directive_options !== undefined && directive_options.valueAsString) {
+                    ngModelCtrl.$setViewValue(value);
                   } else {
-                    ngModelCtrl.$setViewValue(e.target.value);
+                    ngModelCtrl.$setViewValue(new Date(value));
                   }
                 });
               }
